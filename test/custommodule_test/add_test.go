@@ -1,9 +1,10 @@
-package custommodule
+package custommodule_test
 
 import "testing"
+import "goapp/packages/custommodule"
 
 func TestMathAdd(t *testing.T) {
-	sum := Add(1, 2)
+	sum := custommodule.Add(1, 2)
 	expected := 3
 	if (sum != expected) {
 		t.Fatalf(`Error`)
