@@ -1,9 +1,12 @@
 package main
 
 import "fmt"
-import "goapp/packages/custommodule"
+import "goapp/Model"
 
 func main() {
-    fmt.Println("Hello, World!")
-		fmt.Println(custommodule.Add(1, 2))
+  card := Model.Card{
+		Rank: Model.TWO, 
+		Suit: Model.DIAMOND,
+	}
+	fmt.Printf("%v", card.Display())
 }
