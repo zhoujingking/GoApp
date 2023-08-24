@@ -4,6 +4,7 @@ import (
     "github.com/gin-gonic/gin"
     "net/http"
     "fmt"
+    "goapp/routes"
 )
 
 type User struct {
@@ -23,35 +24,11 @@ func main() {
         })
     })
 
-    router.GET("/api/user/:id", func (c*gin.Context) {
-        id := c.Param("id")
-        fmt.Printf("id %v", id)
-        c.JSON(http.StatusOK, gin.H {
-            "id": id,
-            "name": "godking",
-        })
-    })
+    apiGroup := router.Group("/api")
 
-    router.POST("/api/user", func (c*gin.Context) {
-        var user User
-        if c.ShouldBind(&user) == nil {
-            fmt.Println(user.Id)
-            fmt.Println(user.Name)
-            fmt.Println(user.Age)
-            fmt.Println(user.Address)
-        }
-        c.JSON(http.StatusCreated, gin.H{
-            "message": "created",
-        })
-    })
+    routes.SetupUserRoutes(apiGroup)
+    routes.SetupBookRoutes(apiGroup)
 
-
-    router.DELETE("/api/user/:id", func (c*gin.Context) {
-        id := c.Param("id")
-        c.JSON(http.StatusNoContent, gin.H{
-            "message": id + "deleted",
-        })
-    })
     port := ":8080"
     fmt.Printf("You are listening on port %v", port )
     router.Run(port) // default 8080 port
