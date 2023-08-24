@@ -14,6 +14,7 @@ type User struct {
 }
 
 func main() {
+    gin.SetMode(gin.ReleaseMode)
     router := gin.Default()
     router.GET("/api/ping", func (c *gin.Context) {
         // type H map[string]interface{}
@@ -51,6 +52,7 @@ func main() {
             "message": id + "deleted",
         })
     })
-
-    router.Run() // default 8080 port
+    port := ":8080"
+    fmt.Printf("You are listening on port %v", port )
+    router.Run(port) // default 8080 port
 }
