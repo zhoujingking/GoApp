@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
+	"goapp/controllers"
 	"goapp/middleware"
-	"goapp/routes"
 )
 
 func main() {
@@ -25,11 +25,11 @@ func main() {
 
 	// auth needed for user routes
 	authGroup.Use(middleware.Authentication())
-	routes.SetupUserRoutes(authGroup)
+	controllers.SetUpAuthRoutes(authGroup)
 
 	// no auth needed for book routes
 	noAuthGroup := router.Group("/api")
-	routes.SetupBookRoutes(noAuthGroup)
+	controllers.SetupNoAuthRoutes(noAuthGroup)
 
 	port := ":" + viper.GetString("server.port")
 	fmt.Printf("You are listening on port %s", port)
