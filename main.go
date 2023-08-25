@@ -4,10 +4,9 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
+	"goapp/middleware"
 	"goapp/routes"
 )
-
-// TODO: add Auth middleware
 
 func main() {
 	// reading config by viper
@@ -22,10 +21,15 @@ func main() {
 
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
-	apiGroup := router.Group("/api")
+	authGroup := router.Group("/api")
 
-	routes.SetupUserRoutes(apiGroup)
-	routes.SetupBookRoutes(apiGroup)
+	// auth needed for user routes
+	authGroup.Use(middleware.Authentication())
+	routes.SetupUserRoutes(authGroup)
+
+	// no auth needed for book routes
+	noAuthGroup := router.Group("/api")
+	routes.SetupBookRoutes(noAuthGroup)
 
 	port := ":" + viper.GetString("server.port")
 	fmt.Printf("You are listening on port %s", port)
