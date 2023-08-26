@@ -1,9 +1,11 @@
 # JWT
+    package: golang-jwt
+    reference: https://blog.logrocket.com/jwt-authentication-go/
 ## JWT的结构
 JWT由三部分组成：
 
     Header
-    Payload，声明
+    Payload，声明  (Claims)
     Signature，签名
     
     Header由token的类型（"JWT"）和签名算法名称（比如HMAC-SHA256）组成；

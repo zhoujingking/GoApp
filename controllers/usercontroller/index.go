@@ -9,8 +9,14 @@ import (
 )
 
 func GetUserById(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
-	fmt.Printf("id %v", id)
+	username := c.GetString("username")
+	fmt.Printf("%s is accessing GET /user/:id api \n", username)
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "user id is not valid",
+		})
+	}
 	c.JSON(http.StatusOK, models.User{
 		Id:   id,
 		Name: "godking",
