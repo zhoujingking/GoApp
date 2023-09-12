@@ -1,27 +1,28 @@
 package authcontroller
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"goapp/business/authorization"
+	"goapp/dao"
+	"goapp/models"
 	"net/http"
 )
 
-type UserCredential struct {
-	UserName string `json:"username"`
-	Password string `json:"password"`
-}
-
 func Login(c *gin.Context) {
-	var userCredentail UserCredential
-	c.ShouldBind(&userCredentail)
+	var userCredential models.UserCredential
+	c.ShouldBind(&userCredential)
 	// go check in database
-	if userCredentail.UserName == "godking" && userCredentail.Password == "pwd" {
-		token, err := authorization.GenerateToken("godking", "2232323")
-		if err == nil {
-			c.JSON(http.StatusOK, gin.H{
-				"token": token,
-			})
-			return
+	pwd, err := dao.GetRedisClient().HGet("user-credential", userCredential.UserName).Result()
+	if err == nil {
+		if userCredential.Password == pwd {
+			token, err := authorization.GenerateToken(userCredential.UserName, "2232323")
+			if err == nil {
+				c.JSON(http.StatusOK, gin.H{
+					"token": token,
+				})
+				return
+			}
 		}
 	}
 	c.JSON(http.StatusUnauthorized, gin.H{
@@ -33,11 +34,52 @@ func Signup(c *gin.Context) {
 	// check the existence of username
 	// update database
 	// then return OK
-	c.JSON(http.StatusOK, gin.H{
-		"message": "signup successfully",
+
+	var userCredential models.UserCredential
+	c.ShouldBind(&userCredential)
+
+	if userCredential.UserName == "" || userCredential.Password == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Username or password can not be empy",
+		})
+		return
+	}
+
+	_, err := userCredential.Create()
+	if err == nil {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "signup successfully",
+		})
+		return
+	}
+
+	c.JSON(http.StatusBadRequest, gin.H{
+		"message": fmt.Sprint("%s", err),
 	})
 }
 
 func Logout(c *gin.Context) {
+	// get the token, verify, then delete it redis cache
+	//token := c.GetHeader("Authorization")
+	//if token == "" {
+	//	c.JSON(http.StatusUnauthorized, gin.H{
+	//		"message": "token is not present",
+	//	})
+	//	return
+	//}
+	//_, err := authorization.VerifyToken(token)
+	//if err == nil {
+	//	c.JSON(http.StatusOK, gin.H{
+	//		"message": "logout successfully",
+	//	})
+	//	return
+	//}
+	//c.JSON(http.StatusUnauthorized, gin.H{
+	//	"message": "token is not valid",
+	//})
 
+	// no token logout management in server side
+	c.JSON(http.StatusOK, gin.H{
+		"message": "",
+	})
 }

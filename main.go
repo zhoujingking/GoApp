@@ -5,6 +5,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"goapp/controllers"
+	"goapp/dao"
+	_ "goapp/dao"
 	"goapp/middleware"
 )
 
@@ -20,6 +22,15 @@ func main() {
 	}
 
 	gin.SetMode(gin.ReleaseMode)
+
+	redisServer := viper.GetString("redis.ip")
+	redisPort := viper.GetString("redis.port")
+	redisConnErr := dao.InitRedisConnection(redisServer + ":" + redisPort)
+
+	if redisConnErr != nil {
+		panic("redis connection error")
+	}
+	fmt.Println("redis connected successfully")
 	router := gin.Default()
 	authGroup := router.Group("/api")
 
@@ -33,6 +44,7 @@ func main() {
 
 	port := ":" + viper.GetString("server.port")
 	fmt.Printf("You are listening on port %s", port)
+
 	serverError := router.Run(port)
 	if serverError != nil {
 		return

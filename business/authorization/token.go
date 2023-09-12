@@ -5,12 +5,6 @@ import (
 	"time"
 )
 
-type UserClaim struct {
-	Id   string `json:"id"`
-	Name string `json:"name"`
-	jwt.StandardClaims
-}
-
 const secret = "godking-oceansky"
 
 func GenerateToken(name string, id string) (string, error) {
