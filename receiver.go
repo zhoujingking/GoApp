@@ -3,6 +3,7 @@ package main
 import (
 	amqp "github.com/rabbitmq/amqp091-go"
 	"log"
+	"time"
 )
 
 func failOnError(err error, message string) {
@@ -26,7 +27,7 @@ func main() {
 	messageChan, err := ch.Consume(
 		q.Name,
 		"",
-		true,
+		false,
 		false,
 		false,
 		false,
@@ -38,6 +39,9 @@ func main() {
 	go func() {
 		for msg := range messageChan {
 			log.Printf("received a message %s", msg.Body)
+			d := time.Duration(10)
+			time.Sleep(d * time.Second)
+			msg.Ack(false)
 		}
 	}()
 
