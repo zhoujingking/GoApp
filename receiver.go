@@ -24,6 +24,13 @@ func main() {
 	q, err := ch.QueueDeclare("hello", false, false, false, false, nil)
 	failOnError(err, "failed to declare a queue")
 
+	err = ch.Qos(
+		1,     // prefetch count
+		0,     // prefetch size
+		false, // global
+	)
+	failOnError(err, "Failed to set QoS")
+
 	messageChan, err := ch.Consume(
 		q.Name,
 		"",
